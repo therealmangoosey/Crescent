@@ -60,4 +60,4 @@ This project is licensed under the [MIT License](LICENSE).
 ## 🤝 Credits
 
 Created by [Astrofox Studios](https://astrofoxstudios.com) / [ExpHost](https://www.exphost.net)
-Maintained by the ExpHost Team — [crescent.exphost.net](https://crescent.exphost.net)
+Maintained by the ExpHost Team - [crescent.exphost.net](https://crescent.exphost.net)
