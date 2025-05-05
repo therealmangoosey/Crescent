@@ -53,7 +53,7 @@ Or install manually using our [docs](https://docs.crescent.exphost.net) to get s
 
 ## 📝 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GPL-3.0 License](LICENSE).
 
 ---
 
