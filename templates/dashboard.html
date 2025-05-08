@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crescent Finance</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/node_usage.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link rel="stylesheet" href="/static/vars.css">
+</head>
+<body>
+    <div id="dashboard-page">
+        <button class="toggle-sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <img src="/static/logo/Crescent.svg" alt="Logo" style="width: 3rem; height: auto;">
+                <h2>Crescent</h2>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="/dashboard" class="active">
+                        <i class="fas fa-chart-pie"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/incomings">
+                        <i class="fas fa-arrow-trend-up"></i>
+                        <span class="menu-text">Incomings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/outgoings">
+                        <i class="fas fa-arrow-trend-down"></i>
+                        <span class="menu-text">Outgoings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/node_usage">
+                        <i class="fas fa-server"></i>
+                        <span class="menu-text" id="machine-usage-link">Machine Usage</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/settings">
+                        <i class="fas fa-gear"></i>
+                        <span class="menu-text">Settings</span>
+                    </a>
+                </li>
+                {% if session['user_email'] and is_admin(session['user_email']) %}
+                <li>
+                    <a href="/admin">
+                        <i class="fas fa-shield-halved"></i>
+                        <span class="menu-text">Admin</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="//www.exphost.net" class="powered-by">
+                    <span>Powered by</span>
+                    <img src="https://www.exphost.net/images/logo.png" alt="ExpHost Logo" style="width: 80px; height: auto;">
+                </a>
+                <a href="/logout" id="logout-btn" style="display: flex; align-items: center; color: var(--danger); text-decoration: none; padding: 12px 15px; border-radius: 10px;">
+                    <i class="fas fa-right-from-bracket" style="min-width: 30px; font-size: 20px;"></i>
+                    <span class="menu-text">Log out</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Dashboard</h1>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="glass card stat-card" style="grid-column: span 3;">
+                    <div class="stat-icon" style="background: rgba(30, 136, 229, 0.15); color: var(--primary);">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>${{ '%.2f' % total_income }}</h3>
+                        <p>Total Revenue</p>
+                    </div>
+                </div>
+
+                <div class="glass card stat-card" style="grid-column: span 3;">
+                    <div class="stat-icon" style="background: rgba(244, 67, 54, 0.15); color: var(--danger);">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>${{ '%.2f' % total_cost }}</h3>
+                        <p>Total Costs</p>
+                    </div>
+                </div>
+
+                <div class="glass card stat-card" style="grid-column: span 3;">
+                    <div class="stat-icon" style="background: rgba(76, 175, 80, 0.15); color: var(--success);">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>${{ '%.2f' % profit }}</h3>
+                        <p>Net Profit</p>
+                    </div>
+                </div>
+
+                <div class="glass card stat-card" style="grid-column: span 3;">
+                    <div class="stat-icon" style="background: rgba(255, 152, 0, 0.15); color: var(--warning);">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_servers }}</h3>
+                        <p>Servers</p>
+                    </div>
+                </div>
+
+                <div class="glass card" style="grid-column: span 8;">
+                    <div class="card-header">
+                        <h3 class="card-title">Top Nodes by Revenue</h3>
+                        <div class="card-actions">
+                            <button><i class="fas fa-ellipsis-vertical"></i></button>
+                        </div>
+                    </div>
+
+                    {% if top_nodes %}
+                        {% for node in top_nodes %}
+                        <div class="server-item">
+                            <div class="server-icon" style="background: rgba(30, 136, 229, 0.15); color: var(--primary);">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <div class="server-info">
+                                <div class="server-name">{{ node.name }}</div>
+                                <div class="server-details">
+                                    {% if node.memory != '0.00' %}
+                                    <span><i class="fas fa-memory"></i> {{ node.memory }} GB RAM</span>
+                                    {% endif %}
+                                    <span><i class="fas fa-dollar-sign"></i> ${{ node.revenue|float|round(2) }}</span>
+                                </div>
+                            </div>
+                            <div class="server-status {% if node.online %}status-online{% else %}status-offline{% endif %}">
+                                {% if node.online %}Online{% else %}Offline{% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No node revenue data available.</p>
+                    {% endif %}
+                </div>
+
+                <div class="glass card" style="grid-column: span 4;">
+                    <div class="card-header">
+                        <h3 class="card-title">Total Resource Usage</h3>
+                        <div class="card-actions">
+                            <button><i class="fas fa-ellipsis-vertical"></i></button>
+                        </div>
+                    </div>
+                    <div class="usage-container">
+                        <div class="usage-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <strong>RAM Usage</strong>
+                                <span>{{ total_allocated_memory_gb }} / {{ total_available_memory_gb }} GB</span>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div class="gauge-wrapper" style="margin-right: 10px;">
+                                    <div class="gauge-container">
+                                        <svg class="gauge" viewBox="0 0 100 100">
+                                            <circle class="gauge-track" cx="50" cy="50" r="40"></circle>
+                                            <path class="gauge-fill memory-fill{% if memory_percent > 80 %} danger{% elif memory_percent > 60 %} warning{% endif %}"
+                                                  d="M 50,50 m 0,-40 a 40,40 0 1,1 0,80 a 40,40 0 1,1 0,-80"
+                                                  style="stroke-dasharray: {{ (memory_percent * 251.2 / 100) }}, 251.2"></path>
+                                        </svg>
+                                        <div class="gauge-value">{{ memory_percent|round(0) }}<span class="gauge-unit">%</span></div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar" style="flex-grow: 1;">
+                                    <div class="progress-fill memory-bar{% if memory_percent > 80 %} danger{% elif memory_percent > 60 %} warning{% endif %}" style="width: {{ memory_percent }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="usage-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <strong>Disk Usage</strong>
+                                <span>{{ total_allocated_disk_gb }} / {{ total_available_disk_gb }} GB</span>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div class="gauge-wrapper" style="margin-right: 10px;">
+                                    <div class="gauge-container">
+                                        <svg class="gauge" viewBox="0 0 100 100">
+                                            <circle class="gauge-track" cx="50" cy="50" r="40"></circle>
+                                            <path class="gauge-fill disk-fill{% if disk_percent > 80 %} danger{% elif disk_percent > 60 %} warning{% endif %}"
+                                                  d="M 50,50 m 0,-40 a 40,40 0 1,1 0,80 a 40,40 0 1,1 0,-80"
+                                                  style="stroke-dasharray: {{ (disk_percent * 251.2 / 100) }}, 251.2"></path>
+                                        </svg>
+                                        <div class="gauge-value">{{ disk_percent|round(0) }}<span class="gauge-unit">%</span></div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar" style="flex-grow: 1;">
+                                    <div class="progress-fill disk-bar{% if disk_percent > 80 %} danger{% elif disk_percent > 60 %} warning{% endif %}" style="width: {{ disk_percent }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Mobile sidebar toggle
+        document.querySelector('.toggle-sidebar').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

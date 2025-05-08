@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crescent Finance</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/node_usage.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link rel="stylesheet" href="/static/login.css">
+    <link rel="stylesheet" href="/static/incomings.css">
+    <link rel="stylesheet" href="/static/vars.css">
+</head>
+<body>
+    <div id="dashboard-page">
+        <button class="toggle-sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <img src="/static/logo/Crescent.svg" alt="Logo" style="width: 3rem; height: auto;">
+                <h2>Crescent</h2>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="/dashboard">
+                        <i class="fas fa-chart-pie"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/incomings">
+                        <i class="fas fa-arrow-trend-up"></i>
+                        <span class="menu-text">Incomings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/outgoings" class="active">
+                        <i class="fas fa-arrow-trend-down"></i>
+                        <span class="menu-text">Outgoings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/node_usage">
+                        <i class="fas fa-server"></i>
+                        <span class="menu-text" id="machine-usage-link">Machine Usage</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/settings">
+                        <i class="fas fa-gear"></i>
+                        <span class="menu-text">Settings</span>
+                    </a>
+                </li>
+                {% if session['user_email'] and is_admin(session['user_email']) %}
+                <li>
+                    <a href="/admin">
+                        <i class="fas fa-shield-halved"></i>
+                        <span class="menu-text">Admin</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="//www.exphost.net" class="powered-by">
+                    <span>Powered by</span>
+                    <img src="https://www.exphost.net/images/logo.png" alt="ExpHost Logo" style="width: 80px; height: auto;">
+                </a>
+                <a href="/logout" id="logout-btn" style="display: flex; align-items: center; color: var(--danger); text-decoration: none; padding: 12px 15px; border-radius: 10px;">
+                    <i class="fas fa-right-from-bracket" style="min-width: 30px; font-size: 20px;"></i>
+                    <span class="menu-text">Log out</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Outgoings</h1>
+                </div>
+            </div>
+            <div class="income-grid">
+                <div class="card glass" id="machines-outgoings">
+                    <h3 class="card-title"><i class="fas fa-server"></i> Machines Outgoings</h3>
+                    <div class="table">
+                        {% if machine_costs %}
+                            {% for node_id, data in machine_costs.items() %}
+                            <div class="table-row glass-row">
+                                <div class="node-info"><strong>Node:</strong> {{ data.name }} ({{ node_id }})</div>
+                                {% if session['user_email'] and is_admin(session['user_email']) %}
+                                <form action="/update_machine_cost" method="POST" style="display: flex; align-items: center;">
+                                    <input type="hidden" name="node_id" value="{{ node_id }}">
+                                    <input type="number" step="0.01" name="cost" placeholder="$0.00" value="{{ data.cost }}" required style="margin-right: 10px;">
+                                    <button type="submit" class="btn btn-update">Update</button>
+                                </form>
+                                {% else %}
+                                <div class="cost"><strong>Cost:</strong> ${{ '%.2f' % data.cost }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No machine outgoings data available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card glass">
+                    <h3 class="card-title"><i class="fa-dollar-sign"></i> Misc Outgoings</h3>
+                    <div class="table" id="misc-costs-table">
+                        {% if session['user_email'] and is_admin(session['user_email']) %}
+                        <div class="table-row glass-row">
+                            <input type="text" id="new-misc-name" name="name" placeholder="Name" required>
+                            <input type="number" step="0.01" id="new-misc-cost" name="cost" placeholder="$0.00" required>
+                            <button type="button" onclick="addMiscCost()" class="btn btn-update">Add</button>
+                        </div>
+                        {% endif %}
+                        {% if misc_costs %}
+                            {% for name, cost in misc_costs.items() %}
+                            <div class="table-row glass-row" id="misc-cost-{{ name | replace(' ', '_') }}">
+                                {% if session['user_email'] and is_admin(session['user_email']) %}
+                                <input type="text" class="misc-name" value="{{ name }}" required>
+                                <input type="number" step="0.01" class="misc-cost" value="{{ cost }}" required>
+                                <div class="misc-buttons">
+                                    <button type="button" onclick="updateMiscCost('{{ name | replace(' ', '_') }}')" class="btn btn-update">Update</button>
+                                    <button type="button" onclick="removeMiscCost('{{ name | replace(' ', '_') }}')" class="btn btn-danger">Remove</button>
+                                </div>
+                                {% else %}
+                                <div class="misc-name"><strong>{{ name }}:</strong></div>
+                                <div class="misc-cost"><strong>Cost:</strong> ${{ '%.2f' % cost }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No miscellaneous outgoings data available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+            <div class="card profit glass" style="margin-top: 2rem;">
+                <h3 class="card-title"><i class="fas fa-piggy-bank"></i> Total Outgoings</h3>
+                <p><strong>Total:</strong> ${{ total_outgoings | default(0) | float | round(2) }}</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addMiscCost() {
+            const nameInput = document.getElementById('new-misc-name');
+            const costInput = document.getElementById('new-misc-cost');
+            const name = nameInput.value.trim();
+            const value = costInput.value.trim();
+
+            if (name && value) {
+                fetch('/add_cost_ajax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: name, value: value }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const newRow = document.createElement('div');
+                        newRow.classList.add('table-row');
+                        newRow.classList.add('glass-row');
+                        newRow.id = `misc-cost-${name.replace(' ', '_')}`;
+                        newRow.innerHTML = `
+                            <input type="text" class="misc-name" value="${name}" required>
+                            <input type="number" step="0.01" class="misc-cost" value="${value}" required>
+                            <div class="misc-buttons">
+                                <button type="button" onclick="updateMiscCost('${name.replace(' ', '_')}')" class="btn btn-update">Update</button>
+                                <button type="button" onclick="removeMiscCost('${name.replace(' ', '_')}')" class="btn btn-danger">Remove</button>
+                            </div>
+                        `;
+                        document.getElementById('misc-costs-table').appendChild(newRow);
+                        nameInput.value = '';
+                        costInput.value = '';
+                    } else {
+                        console.error('Failed to add cost:', data.error);
+                        alert('Failed to add cost: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding cost:', error);
+                    alert('An error occurred while adding the cost.');
+                });
+            } else {
+                alert('Please enter both a name and a value for the cost.');
+            }
+        }
+
+        function removeMiscCost(originalName) {
+            if (confirm(`Are you sure you want to remove "${originalName.replace('_', ' ')}"?`)) {
+                fetch('/remove_cost_ajax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: originalName.replace('_', ' ') }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const rowToRemove = document.getElementById(`misc-cost-${originalName}`);
+                        if (rowToRemove) {
+                            rowToRemove.remove();
+                        }
+                    } else {
+                        console.error('Failed to remove cost:', data.error);
+                        alert('Failed to remove cost: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error removing cost:', error);
+                    alert('An error occurred while removing the cost.');
+                });
+            }
+        }
+
+        function updateMiscCost(originalName) {
+            const row = document.getElementById(`misc-cost-${originalName}`);
+            const nameInput = row.querySelector('.misc-name');
+            const costInput = row.querySelector('.misc-cost');
+            const newName = nameInput.value.trim();
+            const newValue = costInput.value.trim();
+
+            if (newName && newValue) {
+                fetch('/update_misc_cost_ajax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ original_name: originalName.replace('_', ' '), new_name: newName, new_value: newValue }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const row = document.getElementById(`misc-cost-${originalName}`);
+                        if (row) {
+                            row.id = `misc-cost-${newName.replace(' ', '_')}`;
+                            row.innerHTML = `
+                                <input type="text" class="misc-name" value="${newName}" required>
+                                <input type="number" step="0.01" class="misc-cost" value="${newValue}" required>
+                                <div class="misc-buttons">
+                                    <button type="button" onclick="updateMiscCost('${newName.replace(' ', '_')}')" class="btn btn-update">Update</button>
+                                    <button type="button" onclick="removeMiscCost('${newName.replace(' ', '_')}')" class="btn btn-danger">Remove</button>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        console.error('Failed to update cost:', data.error);
+                        alert('Failed to update cost: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating cost:', error);
+                    alert('An error occurred while updating the cost.');
+                });
+            } else {
+                alert('Please enter both a name and a value to update.');
+            }
+        }
+    </script>
+</body>
+</html>

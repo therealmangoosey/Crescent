@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crescent Finance</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/node_usage.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link rel="stylesheet" href="/static/login.css">
+    <link rel="stylesheet" href="/static/incomings.css">
+    <link rel="stylesheet" href="/static/vars.css">
+</head>
+<body>
+    <div id="dashboard-page">
+        <button class="toggle-sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <img src="/static/logo/Crescent.svg" alt="Logo" style="width: 3rem; height: auto;">
+                <h2>Crescent</h2>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard"><i class="fas fa-chart-pie"></i> <span class="menu-text">Dashboard</span></a></li>
+                <li><a href="/incomings"><i class="fas fa-arrow-trend-up"></i> <span class="menu-text">Incomings</span></a></li>
+                <li><a href="/outgoings"><i class="fas fa-arrow-trend-down"></i> <span class="menu-text">Outgoings</span></a></li>
+                <li><a href="/node_usage"><i class="fas fa-server"></i> <span class="menu-text" id="machine-usage-link">Machine Usage</span></a></li>
+                <li><a href="/settings"><i class="fas fa-gear"></i> <span class="menu-text">Settings</span></a></li>
+                {% if session['user_email'] and is_admin(session['user_email']) %}
+                <li><a href="/admin" class="active"><i class="fas fa-shield-halved"></i> <span class="menu-text">Admin</span></a></li>
+                {% endif %}
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="//www.exphost.net" class="powered-by"><span>Powered by</span> <img src="https://www.exphost.net/images/logo.png" alt="ExpHost Logo" style="width: 80px; height: auto;"></a>
+                <a href="/logout" id="logout-btn" style="display: flex; align-items: center; color: var(--danger); text-decoration: none; padding: 12px 15px; border-radius: 10px;">
+                    <i class="fas fa-right-from-bracket" style="min-width: 30px; font-size: 20px;"></i>
+                    <span class="menu-text">Log out</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Admin</h1>
+                </div>
+            </div>
+
+            <div class="settings-grid">
+                <div class="card glass">
+                    <h3 class="card-title"><i class="fa-solid fa-user"></i> Users</h3>
+                    <div class="table" id="misc-costs-table">
+                        <form action="/admin/add_user" method="POST" class="table-row glass-row">
+                            <div>
+                                <label for="email">Email</label>&nbsp;&nbsp;
+                                <input type="text" name="email" placeholder="admin@example.com" required>
+                            </div>
+                            <div>
+                                <label for="password">Password</label>&nbsp;&nbsp;
+                                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                            </div>
+                            <div>
+                                <label for="is_admin">Make Admin?</label>
+                                <input type="checkbox" name="is_admin">
+                            </div>
+                            <div class="misc-buttons">
+                                <button type="submit" class="btn btn-update">Add</button>
+                            </div>
+                        </form>
+                        {% if users %}
+                            {% for email, user_data in users.items() %}
+                            <div class="table-row glass-row">
+                                <div class="node-info"><strong>Email:</strong> {{ email }}</div>
+                                <form action="/admin/update_password" method="POST" style="display: inline;">
+                                    <input type="hidden" name="email" value="{{ email }}">
+                                    <input type="password" name="password" placeholder="New Password">
+                                    <button type="submit" class="btn btn-update">Update Password</button>
+                                </form>
+                                <form action="/admin/make_admin" method="POST" style="display: inline;">
+                                    <input type="hidden" name="email" value="{{ email }}">
+                                    <button type="submit" class="btn btn-danger">{% if user_data.is_admin %}Revoke Admin{% else %}Make Admin{% endif %}</button>
+                                </form>
+                                <form action="/admin/remove_user" method="POST" style="display: inline;">
+                                    <input type="hidden" name="email" value="{{ email }}">
+                                    <button type="submit" class="btn btn-danger">Remove</button>
+                                </form>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="table-row glass-row">No users found.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Mobile sidebar toggle
+        document.querySelector('.toggle-sidebar').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

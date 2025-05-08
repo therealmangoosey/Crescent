@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crescent Finance</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link rel="stylesheet" href="/static/vars.css">
+    <link rel="stylesheet" href="/static/incomings.css">
+</head>
+<body>
+    <div id="dashboard-page">
+        <button class="toggle-sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <img src="/static/logo/Crescent.svg" alt="Logo" style="width: 3rem; height: auto;">
+                <h2>Crescent</h2>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="/dashboard">
+                        <i class="fas fa-chart-pie"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/incomings" class="active">
+                        <i class="fas fa-arrow-trend-up"></i>
+                        <span class="menu-text">Incomings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/outgoings">
+                        <i class="fas fa-arrow-trend-down"></i>
+                        <span class="menu-text">Outgoings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/node_usage">
+                        <i class="fas fa-server"></i>
+                        <span class="menu-text" id="machine-usage-link">Machine Usage</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/settings">
+                        <i class="fas fa-gear"></i>
+                        <span class="menu-text">Settings</span>
+                    </a>
+                </li>
+                {% if session['user_email'] and is_admin(session['user_email']) %}
+                <li>
+                    <a href="/admin">
+                        <i class="fas fa-shield-halved"></i>
+                        <span class="menu-text">Admin</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="//www.exphost.net" class="powered-by">
+                    <span>Powered by</span>
+                    <img src="https://www.exphost.net/images/logo.png" alt="ExpHost Logo" style="width: 80px; height: auto;">
+                </a>
+                <a href="/logout" id="logout-btn" style="display: flex; align-items: center; color: var(--danger); text-decoration: none; padding: 12px 15px; border-radius: 10px;">
+                    <i class="fas fa-right-from-bracket" style="min-width: 30px; font-size: 20px;"></i>
+                    <span class="menu-text">Log out</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Incomings</h1>
+                </div>
+            </div>
+            <div class="income-grid">
+                {% for node, income in node_income.items() %}
+                <div class="card glass">
+                    <h3 class="card-title"><i class="fas fa-server"></i> {{ node }}: ${{ '%.2f' % income }}</h3>
+                    <div class="table">
+                        {% for svc in service_details[node] %}
+                        <div class="table-row glass">
+                            <div><strong>Service ID:</strong> {{ svc.service_id }}</div>
+                            <div><strong>User Email:</strong> {{ svc.user_email }}</div>
+                            <div><strong>Server UUID:</strong> {{ svc.server_uuid }}</div>
+                            <div><strong>Server Name:</strong> {{ svc.server_name }}</div>
+                            <div><strong>Status:</strong> {{ svc.status }}</div>
+                            <div><strong>Price:</strong> ${{ '%.2f' % svc.price|float }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="card glass">
+                    <h3 class="card-title">Active Services Without a Pterodactyl Server</h3>
+                    <p><strong>Total Unmatched Income:</strong> ${{ '%.2f' % unmatched_services_total }}</p>
+                    <div class="table">
+                        {% for svc in unmatched_services %}
+                        <div class="table-row glass">
+                            <div><strong>Service ID:</strong> {{ svc.service_id }}</div>
+                            <div><strong>User Email:</strong> {{ svc.user_email }}</div>
+                            <div><strong>Status:</strong> {{ svc.status }}</div>
+                            <div><strong>Price:</strong> ${{ '%.2f' % svc.price|float }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card glass">
+                    <h3 class="card-title"><i class="fa-dollar-sign"></i> Extra Income Details</h3>
+                    <div class="table" id="extra-income-table">
+                        {% if session['user_email'] and is_admin(session['user_email']) %}
+                        <div class="table-row glass-row">
+                            <input type="text" id="new-income-name" name="name" placeholder="Name" required>
+                            <input type="number" step="0.01" id="new-income-value" name="value" placeholder="$0.00" required>
+                            <button type="button" onclick="addExtraIncome()" class="btn btn-update">Add</button>
+                        </div>
+                        {% endif %}
+                        {% if extra_income_details %}
+                            {% for name, value in extra_income_details.items() %}
+                            <div class="table-row glass-row" id="extra-income-{{ name | replace(' ', '_') }}">
+                                {% if session['user_email'] and is_admin(session['user_email']) %}
+                                <input type="text" class="income-name" value="{{ name }}" required>
+                                <input type="number" step="0.01" class="income-value" value="{{ value }}" required>
+                                <div class="income-buttons">
+                                    <button type="button" onclick="updateExtraIncome('{{ name | replace(' ', '_') }}')" class="btn btn-update">Update</button>
+                                    <button type="button" onclick="removeExtraIncome('{{ name | replace(' ', '_') }}')" class="btn btn-danger">Remove</button>
+                                </div>
+                                {% else %}
+                                <div class="income-name"><strong>{{ name }}:</strong></div>
+                                <div class="income-value">${{ value }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No extra incomings data available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card profit glass" style="margin-top: 2rem;">
+                    <h3 class="card-title"><i class="fas fa-piggy-bank"></i> Profit Calculation</h3>
+                    <p><strong>Total Income:</strong> ${{ '%.2f' % total_income }}</p>
+                    <p><strong>Total Cost:</strong> ${{ '%.2f' % total_cost }}</p>
+                    <p><strong>Profit:</strong> ${{ '%.2f' % profit }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addExtraIncome() {
+            const nameInput = document.getElementById('new-income-name');
+            const valueInput = document.getElementById('new-income-value');
+            const name = nameInput.value.trim();
+            const value = valueInput.value.trim();
+
+            if (name && value) {
+                fetch('/add_extra_income_ajax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: name, value: value }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const newRow = document.createElement('div');
+                        newRow.classList.add('table-row');
+                        newRow.classList.add('glass-row');
+                        newRow.id = `extra-income-${name.replace(' ', '_')}`;
+                        newRow.innerHTML = `
+                            <input type="text" class="income-name" value="${name}" required>
+                            <input type="number" step="0.01" class="income-value" value="${value}" required>
+                            <div class="income-buttons">
+                                <button type="button" onclick="updateExtraIncome('${name.replace(' ', '_')}')" class="btn btn-update">Update</button>
+                                <button type="button" onclick="removeExtraIncome('${name.replace(' ', '_')}')" class="btn btn-danger">Remove</button>
+                            </div>
+                        `;
+                        document.getElementById('extra-income-table').appendChild(newRow);
+                        nameInput.value = '';
+                        valueInput.value = '';
+                    } else {
+                        console.error('Failed to add income:', data.error);
+                        alert('Failed to add income: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding income:', error);
+                    alert('An error occurred while adding the income.');
+                });
+            } else {
+                alert('Please enter both a name and a value for the income.');
+            }
+        }
+
+        function removeExtraIncome(originalName) {
+            if (confirm(`Are you sure you want to remove "${originalName.replace('_', ' ')}"?`)) {
+                fetch('/remove_extra_income_ajax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: originalName.replace('_', ' ') }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const rowToRemove = document.getElementById(`extra-income-${originalName}`);
+                        if (rowToRemove) {
+                            rowToRemove.remove();
+                        }
+                    } else {
+                        console.error('Failed to remove income:', data.error);
+                        alert('Failed to remove income: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error removing income:', error);
+                    alert('An error occurred while removing the income.');
+                });
+            }
+        }
+
+        function updateExtraIncome(originalName) {
+            const row = document.getElementById(`extra-income-${originalName}`);
+            const nameInput = row.querySelector('.income-name');
+            const valueInput = row.querySelector('.income-value');
+            const newName = nameInput.value.trim();
+            const newValue = valueInput.value.trim();
+
+            if (newName && newValue) {
+                fetch('/update_income', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ original_name: originalName.replace('_', ' '), new_name: newName, new_value: newValue }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const row = document.getElementById(`extra-income-${originalName}`);
+                        if (row) {
+                            row.id = `extra-income-${newName.replace(' ', '_')}`;
+                            row.innerHTML = `
+                                <input type="text" class="income-name" value="${newName}" required>
+                                <input type="number" step="0.01" class="income-value" value="${newValue}" required>
+                                <div class="income-buttons">
+                                    <button type="button" onclick="updateExtraIncome('${newName.replace(' ', '_')}')" class="btn btn-update">Update</button>
+                                    <button type="button" onclick="removeExtraIncome('${newName.replace(' ', '_')}')" class="btn btn-danger">Remove</button>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        console.error('Failed to update income:', data.error);
+                        alert('Failed to update income: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating income:', error);
+                    alert('An error occurred while updating the income.');
+                });
+            } else {
+                alert('Please enter both a name and a value to update.');
+            }
+        }
+    </script>
+</body>
+</html>

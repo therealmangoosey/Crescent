@@ -1,0 +1,158 @@
+:root {
+    --bg-secondary: #1e1e2f;
+    --bg-tertiary: #2a2a3d;
+    --bg-highlight: #26263a;
+    --accent: #00aaff;
+    --text-highlight: #ffffff;
+    --profit: #2ecc71; /* Green for profit */
+}
+
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 20px;
+    transition: all 0.3s ease;
+    width: calc(100vw - 260px);
+}
+.income-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+    gap: 5rem;
+    width: 100%;
+}
+.card {
+    background: var(--card-bg, #1e1e2f);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Overlay effect like node cards */
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.05) 5%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Table Styling */
+.table {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Row Styling */
+.table-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: auto;
+}
+
+.table-row div:last-child {
+    color: #2ecc71;
+    font-weight: 600;
+}
+
+.table-row input {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    outline: none;
+    transition: all 0.3s;
+}
+
+.card p {
+    margin: 8px 0;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+.card.profit {
+    grid-column: span 2;
+    background-color: var(--bg-highlight);
+    border: 2px solid var(--accent);
+    text-align: center;
+    margin-bottom: 5rem;
+}
+
+.card.profit p {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.card.profit p strong {
+    color: var(--profit);
+    font-weight: 700;
+}
+
+.glass-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-row input[type="number"],
+.glass-row input[type="password"],
+.glass-row input[type="text"] {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    max-width: 15rem;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+.glass-row .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-update {
+    background: var(--primary);
+}
+
+.btn-danger {
+    background: var(--danger);
+}
+
+.misc-buttons {
+    display: flex;
+    gap: 0.5rem;
+}

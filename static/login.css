@@ -1,0 +1,112 @@
+
+
+/* Glassmorphism style */
+.glass {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    background-color: var(--dark-bg);
+    background-image: radial-gradient(circle at 25% 25%, rgba(30, 136, 229, 0.2) 0%, transparent 50%), 
+                      radial-gradient(circle at 75% 75%, rgba(30, 136, 229, 0.1) 0%, transparent 50%);
+}
+
+.login-card {
+    width: 400px;
+    padding: 40px;
+}
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-logo h2 {
+    color: var(--primary-light);
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.login-form .form-group {
+    margin-bottom: 20px;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text);
+}
+
+.login-form input {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    outline: none;
+    transition: all 0.3s;
+}
+
+.login-form input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+}
+
+.login-form .forgot-password {
+    display: block;
+    text-align: right;
+    margin-top: 10px;
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.login-form .forgot-password:hover {
+    color: var(--primary);
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .search-bar {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .toggle-sidebar {
+        display: block;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+

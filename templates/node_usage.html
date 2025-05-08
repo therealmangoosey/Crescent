@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crescent Finance</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/node_usage.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link rel="stylesheet" href="/static/vars.css">
+</head>
+<body>
+    <div id="dashboard-page">
+        <button class="toggle-sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <img src="/static/logo/Crescent.svg" alt="Logo" style="width: 3rem; height: auto;"></img>
+                <h2>Crescent</h2>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="/dashboard">
+                        <i class="fas fa-chart-pie"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/incomings">
+                        <i class="fas fa-arrow-trend-up"></i>
+                        <span class="menu-text">Incomings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/outgoings">
+                        <i class="fas fa-arrow-trend-down"></i>
+                        <span class="menu-text">Outgoings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/node_usage" class="active">
+                        <i class="fas fa-server"></i>
+                        <span class="menu-text" id="machine-usage-link">Machine Usage</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/settings">
+                        <i class="fas fa-gear"></i>
+                        <span class="menu-text">Settings</span>
+                    </a>
+                </li>
+                {% if session['user_email'] and is_admin(session['user_email']) %}
+                <li>
+                    <a href="/admin">
+                        <i class="fas fa-shield-halved"></i>
+                        <span class="menu-text">Admin</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            
+            <div class="sidebar-footer">
+                <a href="//www.exphost.net" class="powered-by">
+                    <span>Powered by</span>
+                    <img src="https://www.exphost.net/images/logo.png" alt="ExpHost Logo" style="width: 80px; height: auto;">
+                </a>
+                <a href="/logout" id="logout-btn" style="display: flex; align-items: center; color: var(--danger); text-decoration: none; padding: 12px 15px; border-radius: 10px;">
+                    <i class="fas fa-right-from-bracket" style="min-width: 30px; font-size: 20px;"></i>
+                    <span class="menu-text">Log out</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Machine Usage</h1>
+                </div>
+            </div>
+            
+
+  <div class="node-grid">
+    {% for node in nodes_usage %}
+    <div class="node-card glass">
+        <h2>{{ node.node_name }}</h2>
+        <div class="server-count">
+            <i class="fas fa-server"></i>
+            Total Servers: {{ node.server_count }}
+        </div>
+
+        <div class="usage-container">
+            <!-- Memory Allocation -->
+            <div class="usage-item">
+                <div class="usage-header">
+                    <strong>Memory Allocation</strong>
+                    <span>{{ node.total_allocated_memory_gb }} / {{ node.total_memory_for_display_gb }} GB</span>
+                </div>
+                <div class="gauge-wrapper">
+                    <div class="gauge-container">
+                        <svg class="gauge" viewBox="0 0 100 100">
+                            <circle class="gauge-track" cx="50" cy="50" r="40"></circle>
+                            <path class="gauge-fill memory-fill{% if node.allocated_memory_percent > 80 %} danger{% elif node.allocated_memory_percent > 60 %} warning{% endif %}"
+                                d="M 50,50 m 0,-40 a 40,40 0 1,1 0,80 a 40,40 0 1,1 0,-80"
+                                style="stroke-dasharray: {{ (node.allocated_memory_percent * 251.2 / 100) }}, 251.2"></path>
+                        </svg>
+                        <div class="gauge-value">{{ node.allocated_memory_percent|round(0) }}<span class="gauge-unit">%</span></div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill memory-bar{% if node.allocated_memory_percent > 80 %} danger{% elif node.allocated_memory_percent > 60 %} warning{% endif %}" style="width: {{ node.allocated_memory_percent }}%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disk Allocation -->
+            <div class="usage-item">
+                <div class="usage-header">
+                    <strong>Disk Allocation</strong>
+                    <span>{{ node.total_allocated_disk_gb }} / {{ node.total_disk_for_display_gb }} GB</span>
+                </div>
+                <div class="gauge-wrapper">
+                    <div class="gauge-container">
+                        <svg class="gauge" viewBox="0 0 100 100">
+                            <circle class="gauge-track" cx="50" cy="50" r="40"></circle>
+                            <path class="gauge-fill disk-fill{% if node.allocated_disk_percent > 80 %} danger{% elif node.allocated_disk_percent > 60 %} warning{% endif %}"
+                                d="M 50,50 m 0,-40 a 40,40 0 1,1 0,80 a 40,40 0 1,1 0,-80"
+                                style="stroke-dasharray: {{ (node.allocated_disk_percent * 251.2 / 100) }}, 251.2"></path>
+                        </svg>
+                        <div class="gauge-value">{{ node.allocated_disk_percent|round(0) }}<span class="gauge-unit">%</span></div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill disk-bar{% if node.allocated_disk_percent > 80 %} danger{% elif node.allocated_disk_percent > 60 %} warning{% endif %}" style="width: {{ node.allocated_disk_percent }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    
+</div>
+
