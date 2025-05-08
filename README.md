@@ -59,5 +59,5 @@ This project is licensed under the [GPL-3.0 License](LICENSE).
 
 ## 🤝 Credits
 
-Created by [ExpHost](https://www.exphost.net)
+Created by [ExpHost](https://www.exphost.net) 
 Maintained by the ExpHost Team - [crescent.exphost.net](https://crescent.exphost.net)
