@@ -37,7 +37,6 @@ EXTRA_INCOME_FILE = 'extra_income.txt'
 USERS_FILE = 'users.json'
 
 def get_db_connection(config, connection_name=""):
-    """Get a database connection with error handling."""
     try:
         connection = mysql.connector.connect(
             user=config['user'],
@@ -54,14 +53,12 @@ def get_db_connection(config, connection_name=""):
         return None
 
 def to_decimal(value):
-    """Safely convert a value to a Decimal."""
     try:
         return Decimal(value)
     except (ValueError, TypeError, DecimalException):
         return None
 
 def load_costs(file_path):
-    """Load costs from a JSON file."""
     machine_costs = {}
     misc_costs = {}
     if os.path.exists(file_path):
@@ -81,7 +78,6 @@ def load_costs(file_path):
     return machine_costs, misc_costs
 
 def save_costs(file_path, machine_costs, misc_costs):
-    """Save machine and miscellaneous costs to a JSON file."""
     data = {'machine_costs': {k: float(v) for k, v in machine_costs.items()},
             'misc_costs': {k: float(v) for k, v in misc_costs.items()}}
     try:
@@ -91,7 +87,6 @@ def save_costs(file_path, machine_costs, misc_costs):
         logging.error(f"Error saving costs to {file_path}: {e}")
 
 def get_pterodactyl_db_connection():
-    """Get a connection to the Pterodactyl database."""
     try:
         connection = mysql.connector.connect(**pterodactyl_config)
         if connection.is_connected():
@@ -102,7 +97,6 @@ def get_pterodactyl_db_connection():
     return None
 
 def get_pterodactyl_nodes():
-    """Fetches node IDs and names from the Pterodactyl database."""
     pconn = get_pterodactyl_db_connection()
     if not pconn:
         logging.error("Failed to connect to Pterodactyl database")
@@ -124,7 +118,6 @@ def get_pterodactyl_nodes():
     return nodes
 
 def load_extra_income(file_path):
-    """Load extra income details from a JSON file."""
     try:
         with open(file_path, 'r') as f:
             return json.load(f)
@@ -134,7 +127,6 @@ def load_extra_income(file_path):
         return {}
 
 def save_extra_income(file_path, data):
-    """Save extra income details to a JSON file."""
     try:
         with open(file_path, 'w') as f:
             json.dump(data, f, indent=4)
@@ -142,7 +134,6 @@ def save_extra_income(file_path, data):
         logging.error(f"Error saving extra income to {file_path}: {e}")
 
 def load_users():
-    """Load user data from users.json."""
     try:
         with open('users.json', 'r') as f:
             return json.load(f)
@@ -152,12 +143,10 @@ def load_users():
         return {}
 
 def save_users(users):
-    """Save user data to users.json."""
     with open('users.json', 'w') as f:
         json.dump(users, f, indent=4)
 
 def load_extra_income(file_path):
-    """Load extra income values from a text file."""
     extra_income_details = {}
     if os.path.exists(file_path):
         try:
@@ -183,7 +172,6 @@ def load_extra_income(file_path):
 
 
 def save_extra_income(file_path, income_details):
-    """Save extra income details to a text file."""
     try:
         with open(file_path, 'w') as f:
             for name, value in income_details.items():
@@ -220,7 +208,6 @@ def admin_required(f):
 
 @app.route('/')
 def home():
-    """Redirects to /login if not logged in, otherwise to /dashboard."""
     if 'user_email' in session:
         return redirect(url_for('dashboard_page'))
     else:
@@ -330,7 +317,6 @@ def index():
 
 @app.route('/outgoings', methods=['GET'])
 def outgoings_page():
-    """Renders the outgoings page with machine and miscellaneous costs, requiring user login."""
     if 'user_email' not in session:
         return redirect(url_for('login_page'))
 
@@ -403,7 +389,6 @@ def login_page():
 
 @app.route('/dashboard')
 def dashboard_page():
-    """Renders the main dashboard page with data, login check, and Wings service status."""
     if 'user_email' not in session:
         return redirect(url_for('login_page'))
 
@@ -631,7 +616,6 @@ def logout():
 
 @app.route('/node_usage')
 def node_usage():
-    """Renders the node usage page, requiring user login."""
     if 'user_email' not in session:
         return redirect(url_for('login_page'))
 
@@ -711,7 +695,6 @@ def node_usage():
 
 @app.route('/add_cost_ajax', methods=['POST'])
 def add_cost_ajax():
-    """Adds a new miscellaneous cost via AJAX."""
     data = request.get_json()
     name = data.get('name')
     value = data.get('value')
@@ -729,7 +712,6 @@ def add_cost_ajax():
 
 @app.route('/remove_cost_ajax', methods=['POST'])
 def remove_cost_ajax():
-    """Removes a miscellaneous cost via AJAX."""
     data = request.get_json()
     name = data.get('name')
     if name and not name.startswith("NODE_"):
@@ -745,7 +727,6 @@ def remove_cost_ajax():
 
 @app.route('/update_misc_cost_ajax', methods=['POST'])
 def update_misc_cost_ajax():
-    """Updates an existing miscellaneous cost via AJAX."""
     data = request.get_json()
     original_name = data.get('original_name')
     new_name = data.get('new_name')
@@ -769,7 +750,6 @@ def update_misc_cost_ajax():
 
 @app.route('/add_extra_income_ajax', methods=['POST'])
 def add_extra_income_ajax():
-    """Adds a new extra income entry via AJAX."""
     data = request.get_json()
     name = data.get('name')
     value = data.get('value')
@@ -788,7 +768,6 @@ def add_extra_income_ajax():
 
 @app.route('/remove_extra_income_ajax', methods=['POST'])
 def remove_extra_income_ajax():
-    """Removes an extra income entry via AJAX."""
     data = request.get_json()
     name = data.get('name')
     if name:
@@ -804,7 +783,6 @@ def remove_extra_income_ajax():
 
 @app.route('/update_income', methods=['POST'])
 def update_income():
-    """Updates an existing extra income entry via AJAX."""
     data = request.get_json()
     original_name = data.get('original_name')
     new_name = data.get('new_name')

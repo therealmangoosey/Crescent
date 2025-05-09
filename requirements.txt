@@ -1,8 +1,6 @@
 Flask
 mysql-connector-python
-decimal
 python-dotenv
 requests
-logging
 werkzeug
 ping3
