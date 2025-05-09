@@ -1,5 +1,5 @@
 {
-  "name": "Crescent",
+  "name": "Crescent Finance",
   "short_name": "Crescent",
   "icons": [
     {
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#080f3d",
-  "background_color": "#080f3d",
+  "theme_color": "#8b1ee5",
+  "background_color": "#8b1ee5",
   "display": "standalone"
 }
