@@ -2,7 +2,7 @@
 
 **Self-hosted hosting finance dashboard for Pterodactyl + Paymenter**
 
-Crescent is an open-source dashboard for managing and visualizing your hosting income, costs, and server usage — built to work seamlessly with [Pterodactyl](https://pterodactyl.io) and [Paymenter](https://github.com/Paymenter/Paymenter).
+Crescent is an open-source dashboard for managing and visualizing your hosting income, costs, and server usage built to work seamlessly with [Pterodactyl](https://pterodactyl.io) and [Paymenter](https://github.com/Paymenter/Paymenter).
 
 > 💸 Track node-linked income
 > 💻 Monitor usage like Grafana
@@ -333,4 +333,3 @@ This project is licensed under the [GPL-3.0 License](https://www.google.com/sear
 
 Created by [ExpHost](https://www.exphost.net)
 Maintained by the ExpHost Team - [crescent.exphost.net](https://crescent.exphost.net)
-```
