@@ -12,6 +12,37 @@
     <link rel="stylesheet" href="/static/login.css">
     <link rel="stylesheet" href="/static/incomings.css">
     <link rel="stylesheet" href="/static/vars.css">
+    <style>
+        @media screen and (max-width: 600px) {
+            .table-row.glass-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .table-row.glass-row form {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .table-row.glass-row form input,
+            .table-row.glass-row form button {
+                width: 100%;
+            }
+        }
+
+        .table-row.glass-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+
+    </style>
 </head>
 <body>
     <div id="dashboard-page">
