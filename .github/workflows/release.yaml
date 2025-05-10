@@ -4,12 +4,11 @@ on:
   release:
     types: [published]
 
-permissions:
-  contents: write
-
 jobs:
   package:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Explicitly set permissions at the job level
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
