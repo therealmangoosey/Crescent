@@ -7,8 +7,10 @@ on:
 
 jobs:
   release:
-    name: Compressing
+    name: Create Archive and Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,7 +23,7 @@ jobs:
           SUM=$(sha256sum crescent-${{ github.ref_name }}.tar.gz)
           echo "$SUM crescent-${{ github.ref_name }}.tar.gz" > checksum.txt
 
-      - name: Release
+      - name: Create GitHub release
         id: create_release
         uses: softprops/action-gh-release@v1
         env:
