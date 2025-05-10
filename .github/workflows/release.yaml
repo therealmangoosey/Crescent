@@ -1,22 +1,36 @@
-name: Compress and Release
+name: Release
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - "v*"
 
 jobs:
-  build:
+  release:
+    name: Compressing
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Compress code into .tar.gz
+      - name: Create release archive
+        run: tar -czf crescent-${{ github.ref_name }}.tar.gz --exclude=".github" * .[^.]*
+
+      - name: Create checksum
         run: |
-          tar --exclude='*.git*' --exclude='*.github*' -czf crescent.tar.gz *
+          SUM=$(sha256sum crescent-${{ github.ref_name }}.tar.gz)
+          echo "$SUM crescent-${{ github.ref_name }}.tar.gz" > checksum.txt
 
-      - name: Upload release asset
-        uses: actions/upload-artifact@v2
+      - name: Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: release-code
-          path: release-code.tar.gz
+          name: Crescent ${{ github.ref_name }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: ${{ contains(github.ref, 'rc') || contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+          files: |
+            crescent-${{ github.ref_name }}.tar.gz
+            checksum.txt
