@@ -121,7 +121,7 @@ PTERODACTYL_DB_PASSWORD=secure-password
 PTERODACTYL_DB_HOST=your_pterodactyl_host_ip
 PTERODACTYL_DB_NAME=panel
 
-PTERODACTYL_API_URL=[https://panel.example.com/](https://panel.example.com/)
+PTERODACTYL_API_URL=https://panel.example.com/
 PTERODACTYL_API_KEY=ptero-api
 
 DEFAULT_ADMIN_EMAIL=admin@example.com
