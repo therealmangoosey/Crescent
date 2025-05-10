@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write # This line grants write permission for repository contents, including releases
+
 jobs:
   package:
     runs-on: ubuntu-latest
