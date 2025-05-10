@@ -1,0 +1,28 @@
+name: Create Crescent Release Archive
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Full Source Archive
+        run: |
+          echo "Creating crescent.tar.gz containing the entire repository..."
+          tar -czvf crescent.tar.gz *
+          echo "crescent.tar.gz created successfully."
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: crescent.tar.gz
+          asset_name: crescent.tar.gz
+          asset_content_type: application/gzip
