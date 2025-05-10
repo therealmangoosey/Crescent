@@ -5,7 +5,7 @@ on:
     types: [published]
 
 permissions:
-  contents: write # This line grants write permission for repository contents, including releases
+  contents: write
 
 jobs:
   package:
@@ -23,7 +23,10 @@ jobs:
           echo "crescent.tar.gz created successfully."
 
       - name: Upload Release Asset
+        id: upload-release-asset
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: crescent.tar.gz
