@@ -279,8 +279,8 @@ This section guides you through configuring Nginx to serve the Crescent applicat
 
         server_name crescent.example.com;
 
-        ssl_certificate /etc/letsencrypt/live/[crescent.example.com/fullchain.pem](https://crescent.example.com/fullchain.pem);
-        ssl_certificate_key /etc/letsencrypt/live/[crescent.example.com/privkey.pem](https://crescent.example.com/privkey.pem);
+        ssl_certificate /etc/letsencrypt/live/crescent.example.com/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/crescent.example.com/privkey.pem;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_prefer_server_ciphers on;
