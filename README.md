@@ -51,7 +51,7 @@ cd /var/www/crescent
 #### 2\. Download the latest release:
 
 ```bash
-curl -Lo crescent.tar.gz https://codeload.github.com/exphost-net/Crescent/tar.gz/refs/tags/release
+curl -Lo crescent.tar.gz https://github.com/exphost-net/Crescent/releases/latest/download/crescent.tar.gz
 ```
 
 #### 3\. Extract the downloaded archive:
