@@ -21,10 +21,10 @@ Crescent is an open-source dashboard for managing and visualizing your hosting i
 
 ---
 
-## 🌐 Live Demo / Docs
+## 🌐 Links
 
-- 🌐 App: [crescent.exphost.net](https://crescent.exphost.net)
-- 📚 Docs: [docs.crescent.exphost.net/](https://docs.crescent.exphost.net/)
+- 🌐 Demo: [crescent.exphost.net](https://crescent.exphost.net)
+- 📚 Docs: [docs.exphost.net/](https://docs.exphost.net/)
 - 🧰 Install Scripts: [billing.exphost.net](https://billing.exphost.net)
 
 ---
