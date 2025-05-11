@@ -13,8 +13,8 @@ Crescent is an open-source dashboard for managing and visualizing your hosting i
 ## 🚀 Pages
 
 - 📊 **Dashboard**: Overall income and key metrics at a glance.
-- 💰 **Incomings**: Detailed income data fetched from Paymenter, organized by node.
-- 💸 **Outgoings**: Easily add and manage expenses, categorized by node or as miscellaneous costs.
+- 💰 **Income**: Detailed income data fetched from Paymenter, organized by node.
+- 💸 **Expenses**: Easily add and manage expenses, categorized by node or as miscellaneous costs.
 - 📈 **Machine Usage**: Grafana-style graphs providing insights into RAM and storage utilization.
 - ⚙️ **Settings**: Personalize your account options and configure 2-Factor Authentication for enhanced security.
 - 🔐 **Admin**: Powerful user management interface with role-based access control.
