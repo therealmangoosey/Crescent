@@ -1,6 +1,6 @@
-## Crescent Alpha Release v0.1
+## Crescent Alpha Release v0.1.1
 
-Welcome to the first alpha release of Crescent! This initial version lays the foundation for our self-hosted finance dashboard, built to integrate seamlessly with Pterodactyl and Paymenter.
+Welcome to Crescent Alpha v.0.1.1! This version lays the foundation for our self-hosted finance dashboard, built to integrate seamlessly with Pterodactyl and Paymenter.
 
 ### Features
 
@@ -10,7 +10,7 @@ Welcome to the first alpha release of Crescent! This initial version lays the fo
 
 ### Whats Changed?
 
-Nothing as of yet, this section will be used for change log in the future!
+* 
 
 ### Security Vulnerabilities
 
@@ -18,5 +18,5 @@ If you discover any security bugs or issues, please help us improve Crescent by 
 
 ### Notes
 
-* This is an alpha release, so expect some bugs and limited features. Your feedback is invaluable!
+* This is an alpha release, so expect bugs and limited features. Your feedback is invaluable!
 * For general support, visit our Git issues: [https://github.com/exphost-net/Crescent/issues](https://github.com/exphost-net/Crescent/issues) or join our community on the ExpHost Discord.

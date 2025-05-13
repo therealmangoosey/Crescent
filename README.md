@@ -125,10 +125,10 @@ PTERODACTYL_API_URL=https://panel.example.com/
 PTERODACTYL_API_KEY=ptero-api
 
 DEFAULT_ADMIN_EMAIL=admin@example.com
-DEFAULT_ADMIN_PASSWORD=password123
+DEFAULT_ADMIN_PASSWORD=ChangeMe123
 ```
 
-**Important:** Replace the placeholder values with your actual configuration.
+**Important:** Replace the placeholder values with your actual configuration, and make sure to **change the admin password**.
 
 #### 8\. Set File Permissions:
 
